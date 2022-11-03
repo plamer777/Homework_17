@@ -1,4 +1,4 @@
-"""This is a main file of the Flask application. There are two CBW here"""
+"""This is a main file of the Flask application. There are six CBVs here"""
 from flask_restx import Resource
 from flask import request
 from dao.movies_dao import MovieDao
