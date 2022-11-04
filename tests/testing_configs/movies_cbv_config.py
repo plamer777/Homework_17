@@ -27,3 +27,26 @@ VALUES_GET_ONE = {
         "genre_id": 17,
         "director_id": 1,
         "id": 1}
+
+# test data to check POST requests
+NEW_MOVIE = {
+        "title": "Кошмар на улице Вязов",
+        "description": "Раз, два, Фредди заберет тебя",
+        "trailer": "https://www.youtube.com/watch?v=UKei_d0cbP4",
+        "year": 1980,
+        "rating": 8.6,
+        "genre_id": 4,
+        "director_id": 3,
+        "id": 25}
+
+# a test data to check PUT requests
+UPDATED_MOVIE = {
+        "title": "Больше никаких кошмаров",
+        "description": "Фредди ушел и больше не вернется",
+        "trailer": "https://www.youtube.com/watch?v=UKei_d0cbP4",
+        "year": 2001,
+        "rating": 8.6,
+        "genre_id": 4,
+        "director_id": 3,
+        "id": 25
+        }

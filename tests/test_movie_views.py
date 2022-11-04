@@ -1,7 +1,9 @@
 """This file contains a TestMoviesViews class for testing purposes"""
 import pytest
-from tests.testing_configs import MOVIE_KEYS, ROUTES_GET_ALL, VALUES_GET_ONE
-from app import app
+from tests.testing_configs.movies_cbv_config import MOVIE_KEYS, \
+    ROUTES_GET_ALL, VALUES_GET_ONE, NEW_MOVIE, UPDATED_MOVIE
+from run import app
+from utils import check_request, check_records_list
 # -----------------------------------------------------------------------
 
 
@@ -31,16 +33,11 @@ class TestMoviesViews:
         :param movie_amount: the amount of movie that have to be received
         """
         request = test_app.get(route)
-        all_movies = request.json
 
         assert request.status_code == 200, 'Ответ сервера не ОК'
-        assert len(all_movies) == movie_amount, 'Неверное кол-во ' \
-                                                'фильмов в ответе'
-        # checking types and keys of all received movies
-        for movie in all_movies:
 
-            assert type(movie) is dict, 'Тип вложенных данных неверный'
-            assert set(movie) == MOVIE_KEYS, 'Ключи не совпадают'
+        all_movies = request.json
+        check_records_list(all_movies, movie_amount, MOVIE_KEYS)
 
     def test_get_one(self, test_app):
         """The method tests get_one method of MovieView class
@@ -48,12 +45,41 @@ class TestMoviesViews:
         :param test_app: a fixture for testing
         """
         request = test_app.get('/movies/1')
-        movie = request.json
+        check_request(request, MOVIE_KEYS, VALUES_GET_ONE)
 
-        assert request.status_code == 200, 'Ответ сервера не ОК'
+    def test_add_new(self, test_app):
+        """The method tests POST request by '/movies/' route
 
-        assert type(movie) is dict, 'Тип данные не словарь'
-        assert set(movie) == MOVIE_KEYS, 'Ключи не совпадают'
-        # checking values of received dictionary by route /movies/1
-        assert set(movie.values()) == set(VALUES_GET_ONE.values()), \
-            'Значения не совпадают'
+        :param test_app: a fixture for testing
+        """
+        request = test_app.post('/movies/', json=NEW_MOVIE)
+
+        assert request.status_code == 201, 'Данные не добавлены'
+
+        request = test_app.get('/movies/25')
+        check_request(request, MOVIE_KEYS, NEW_MOVIE)
+
+    def test_update(self, test_app):
+        """The method serves to test PUT request by '/movies/25' route
+
+        :param test_app: a fixture for testing
+        """
+        request = test_app.put('/movies/25', json=UPDATED_MOVIE)
+
+        assert request.status_code == 204, 'Данные не обновлены'
+
+        request = test_app.get('/movies/25')
+        check_request(request, MOVIE_KEYS, UPDATED_MOVIE)
+
+    def test_delete(self, test_app):
+        """The method serves to test DELETE request by '/movies/25' route
+
+        :param test_app: a fixture for testing
+        """
+        request = test_app.delete('/movies/25')
+
+        assert request.status_code == 204, 'Данные не были удалены'
+
+        request = test_app.get('/movies/25')
+
+        assert request.status_code == 404, 'Запись по прежнему в базе данных'

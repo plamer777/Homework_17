@@ -17,7 +17,40 @@ class DirectorDao:
         self.model = model
         self.schema = schema
 
-    def add_new(self, data_dict: dict):
+    def get_all(self) -> tuple:
+        """This method returns a list of dictionaries
+
+        :returns:
+            a tuple containing a list of dicts or the result of the operation
+        """
+        all_directors = self.db.session.query(self.model).all()
+
+        if not all_directors:
+            return 'Not Found', 404
+
+        directors_list = self.schema.dump(all_directors, many=True)
+
+        return directors_list, 200
+
+    def get_by_id(self, director_id: int) -> tuple:
+        """This method returns a dictionary found by the provided id
+
+        :param director_id: the id of a searching record
+
+        :returns:
+            a tuple with dictionary and status code or the result of the
+            operation instead if record wasn't found
+        """
+        director = self.model.query.get(director_id)
+
+        if not director:
+            return 'Not Found', 404
+
+        director_dict = self.schema.dump(director)
+
+        return director_dict, 200
+
+    def add_new(self, data_dict: dict) -> tuple:
         """This method adds a new record to the table
 
         :param data_dict: a dictionary containing necessary data
